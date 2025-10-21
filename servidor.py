@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from utils import connect_db, get_all, get_by_id, insert_veiculo
+from utils import connect_db, get_all, get_by_id, insert_veiculo, remove_veiculo
 
 app = Flask(__name__)
 
@@ -28,7 +28,10 @@ def new_item():
     return jsonify(resp), status
     
 
-
+@app.route("/api/veiculos/<id>", methods=["DELETE"])
+def remove_item(id):
+    resp, status = remove_veiculo(id)
+    return jsonify(resp), status
 
 if __name__ == '__main__':
     app.run(debug=True)

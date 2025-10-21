@@ -54,4 +54,16 @@ def insert_veiculo(data):
     return {"message": "Veículo inserido com sucesso."}, 201
 
 
+def remove_veiculo(id):
+    db = connect_db()
+    if db is None:
+        return {"error": "Erro ao conectar ao banco de dados"}, 500
+    object_id = ObjectId(id)
+    result = db.veiculos.delete_one({'_id': object_id})
+    if result.deleted_count == 1:
+        return {"message": "Veículo removido com sucesso."}, 200
+    else:
+        return {"error": "Veículo não encontrado."}, 404
+
+
         
