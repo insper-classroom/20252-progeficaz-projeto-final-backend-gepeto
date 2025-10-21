@@ -5,7 +5,6 @@ app = Flask(__name__)
 
 
 
-
 @app.route("/api/veiculos", methods=["GET"])
 def get_veiculos():
     veiculos = get_all()
