@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
-from utils import connect_db, get_all, get_by_id, insert_veiculo, remove_veiculo, update_veiculo
+from utils import connect_db, get_all, get_by_id, insert_veiculo, remove_veiculo, update_veiculo, authenticate
+
 
 app = Flask(__name__)
 
@@ -38,6 +39,15 @@ def update_item(id):
     data = request.get_json()
     resp,status = update_veiculo(id,data)
     return jsonify(resp), status
+
+## Login 
+
+@app.route("/login", methods=["POST"])
+def login():
+    data = request.get_json()
+    response, status = authenticate(data)
+    return jsonify(response), status
+
 
 if __name__ == '__main__':
     app.run(debug=True)

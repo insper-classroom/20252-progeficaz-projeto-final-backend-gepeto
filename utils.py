@@ -2,11 +2,17 @@ import os
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from bson.objectid import ObjectId
+import bcrypt
+import jwt
+from datetime import datetime, timedelta
+
 
 load_dotenv('.cred')
 
 mongo_uri = os.getenv('MONGO_URI', 'mongodb://localhost:27017/')
 db_name = os.getenv('DB_NAME', 'db_concessionaria')
+JWT_SECRET = os.getenv("JWT_SECRET", "chave_super_secreta")
+JWT_ALG = "HS256"
 
 def connect_db():
     try:
@@ -84,6 +90,41 @@ def update_veiculo(id, data):
 
     return {"message": "Veículo atualizado com sucesso"}, 200
     
+    
+def authenticate(data):
+    db = connect_db()
+    username = data.get("username")
+    password = data.get("password")
+    
+    if not username or not password:
+        return {"error": "Usuário e senha são obrigatórios"}, 400
+
+    user = db.usuarios.find_one({"credenciais.username": username})
+    if not user:
+        return {"error": "Usuário não encontrado"}, 401
+    
+    
+    pw_hash = user["credenciais"]["password_hash"]
+    
+    if isinstance(pw_hash, str):
+        pw_hash = pw_hash.encode()
+
+    if not bcrypt.checkpw(password.encode(), pw_hash):
+        return {"error": "Senha incorreta"}, 401
+
+    payload = {
+        "concessionaria_id": str(user["_id"]),
+        "role": user.get("role", "dealer"),
+        "exp": datetime.utcnow() + timedelta(hours=2)
+    }
+
+    token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALG)
+
+    return {
+        "token": token,
+        "role": payload["role"],
+        "expira_em": payload["exp"].isoformat() + "Z"
+    }, 200
 
 
         
