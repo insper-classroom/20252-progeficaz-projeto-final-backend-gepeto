@@ -38,3 +38,20 @@ def get_by_id(veiculo_id):
             veiculo['_id'] = str(veiculo['_id'])
             return veiculo
     return None
+
+
+def insert_veiculo(data):
+    db = connect_db()
+    if db is None:
+        return {"error": "Erro ao conectar ao banco de dados"}, 500
+    if data is None:
+        return {"error": "Dados inválidos"}, 400
+    required_fields = ['marca', 'modelo', 'ano', 'km', 'categoria', 'motor', 'potencia', 'torque', 'transmissao', 'tracao', 'combustivel', 'consumo', 'preco_estimado', 'descricao','estoque']
+    for field in required_fields:
+        if field not in data:
+            return {"error": f"Campo '{field}' é obrigatório."}, 400
+    db.veiculos.insert_one(data)
+    return {"message": "Veículo inserido com sucesso."}, 201
+
+
+        

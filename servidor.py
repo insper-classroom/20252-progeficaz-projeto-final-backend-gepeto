@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from utils import connect_db, get_all, get_by_id
+from utils import connect_db, get_all, get_by_id, insert_veiculo
 
 app = Flask(__name__)
 
@@ -18,6 +18,14 @@ def get_veiculos_by_id(id):
         return jsonify(veiculo), 200
     else:
         return jsonify({"error": "Veículo não encontrado"}), 404
+    
+    
+    
+@app.route("/api/veiculos", methods=["POST"])
+def new_item():
+    data = request.get_json()
+    resp, status = insert_veiculo(data)
+    return jsonify(resp), status
     
 
 
