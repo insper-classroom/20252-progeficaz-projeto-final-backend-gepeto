@@ -58,12 +58,32 @@ def remove_veiculo(id):
     db = connect_db()
     if db is None:
         return {"error": "Erro ao conectar ao banco de dados"}, 500
-    object_id = ObjectId(id)
+    try:
+        object_id = ObjectId(id)
+    except:
+        return {"error": "ID inválido"}, 400
     result = db.veiculos.delete_one({'_id': object_id})
     if result.deleted_count == 1:
         return {"message": "Veículo removido com sucesso."}, 200
     else:
         return {"error": "Veículo não encontrado."}, 404
+    
+    
+def update_veiculo(id, data):
+    db = connect_db()
+    if db is None:
+        return {"error": "Erro ao conectar ao banco de dados"}, 500
+    try:
+        object_id = ObjectId(id)
+    except:
+        return {"error": "ID inválido"}, 400
+    result = db.veiculos.update_one({'_id': object_id}, {'$set': data})
+
+    if result.matched_count == 0:
+        return {"error": "Veículo não encontrado"}, 404
+
+    return {"message": "Veículo atualizado com sucesso"}, 200
+    
 
 
         

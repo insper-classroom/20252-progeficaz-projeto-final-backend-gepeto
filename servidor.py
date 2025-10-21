@@ -33,5 +33,7 @@ def remove_item(id):
     resp, status = remove_veiculo(id)
     return jsonify(resp), status
 
+
+
 if __name__ == '__main__':
     app.run(debug=True)
