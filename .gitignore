@@ -2,6 +2,7 @@
 .cred
 *.pem
 .env
+.cred
 
 # Ambientes virtuais
 .venv/

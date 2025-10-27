@@ -7,7 +7,7 @@ import jwt
 from datetime import datetime, timedelta
 
 
-load_dotenv()
+load_dotenv(".cred")
 
 mongo_uri = os.getenv('MONGO_URI', 'mongodb://localhost:27017/')
 db_name = os.getenv('DB_NAME', 'db_concessionaria')

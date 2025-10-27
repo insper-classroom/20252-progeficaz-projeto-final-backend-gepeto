@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 from utils import connect_db, get_all, get_by_id, insert_veiculo, remove_veiculo, update_veiculo, authenticate
 
-from utils import connect_db, get_all, get_by_id
 from openai_service import get_recomendacao_veiculo
 
 app = Flask(__name__)
