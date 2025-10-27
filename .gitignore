@@ -1,6 +1,7 @@
 # Arquivos de credenciais 
 .cred
 *.pem
+.env
 
 # Ambientes virtuais
 .venv/

@@ -1,3 +1,4 @@
-flask 
-dotenv
-pymongo 
+flask
+python-dotenv
+pymongo
+openai 
