@@ -1,4 +1,6 @@
 from flask import Flask, request, jsonify
+from utils import connect_db, get_all, get_by_id, insert_veiculo, remove_veiculo, update_veiculo, authenticate
+
 from utils import connect_db, get_all, get_by_id
 from openai_service import get_recomendacao_veiculo
 
@@ -19,6 +21,34 @@ def get_veiculos_by_id(id):
         return jsonify(veiculo), 200
     else:
         return jsonify({"error": "Veículo não encontrado"}), 404
+    
+    
+    
+@app.route("/api/veiculos", methods=["POST"])
+def new_item():
+    data = request.get_json()
+    resp, status = insert_veiculo(data)
+    return jsonify(resp), status
+    
+
+@app.route("/api/veiculos/<id>", methods=["DELETE"])
+def remove_item(id):
+    resp, status = remove_veiculo(id)
+    return jsonify(resp), status
+
+@app.route("/api/veiculos/<id>", methods=["PUT"])
+def update_item(id):
+    data = request.get_json()
+    resp,status = update_veiculo(id,data)
+    return jsonify(resp), status
+
+## Login 
+
+@app.route("/login", methods=["POST"])
+def login():
+    data = request.get_json()
+    response, status = authenticate(data)
+    return jsonify(response), status
 
 
 @app.route("/api/recomendacao", methods=["POST"])
