@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from utils import get_all
 
-load_dotenv()
+load_dotenv(".cred")
 
 openai_api_key = os.getenv('OPENAI_API_KEY')
 client = OpenAI(api_key=openai_api_key) if openai_api_key else None
