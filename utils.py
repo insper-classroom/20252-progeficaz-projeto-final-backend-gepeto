@@ -5,6 +5,7 @@ from bson.objectid import ObjectId
 import bcrypt
 import jwt
 from datetime import datetime, timedelta
+from openai import OpenAI
 
 
 load_dotenv(".cred")
@@ -13,7 +14,8 @@ mongo_uri = os.getenv('MONGO_URI', 'mongodb://localhost:27017/')
 db_name = os.getenv('DB_NAME', 'db_concessionaria')
 JWT_SECRET = os.getenv("JWT_SECRET", "chave_super_secreta")
 JWT_ALG = "HS256"
-
+openai_api_key = os.getenv('OPENAI_API_KEY')
+client = OpenAI(api_key=openai_api_key) if openai_api_key else None
 def connect_db():
     try:
         client = MongoClient(mongo_uri)
@@ -127,4 +129,64 @@ def authenticate(data):
     }, 200
 
 
+
+def recomendacao_veiculo(data):
+    if not client:
+        return {"error": "API da OpenAI não configurada. Verifique a variável OPENAI_API_KEY."}, 500
+
+    pedido_cliente = data.get("pedido_cliente")
+    if not pedido_cliente:
+        return {"error": "O campo 'pedido_cliente' é obrigatório."}, 400
+
+    veiculos = get_all()
+    if not veiculos:
+        return {"error": "Nenhum veículo encontrado no banco de dados."}, 404
+
+    lista_veiculos = "\n".join([
+        (
+            f"- {v.get('marca', '')} {v.get('modelo', '')} ({v.get('ano', '')})\n"
+            f"  Categoria: {v.get('categoria', '')}\n"
+            f"  Motor: {v.get('motor', '')}\n"
+            f"  Potência: {v.get('potencia', '')} | Torque: {v.get('torque', '')}\n"
+            f"  Transmissão: {v.get('transmissao', '')} | Tração: {v.get('tracao', '')}\n"
+            f"  Combustível: {v.get('combustivel', '')}\n"
+            f"  Consumo cidade: {v.get('consumo', {}).get('cidade_km_l', '')} km/l | estrada: {v.get('consumo', {}).get('estrada_km_l', '')} km/l\n"
+            f"  Preço: R$ {v.get('preco_estimado', '')}\n"
+            f"  Descrição: {v.get('descricao', '')}\n"
+        )
+        for v in veiculos
+    ])
+
+    prompt = f"""
+Você é um consultor técnico de vendas especializado em veículos.
+
+Estoque disponível:
+{lista_veiculos}
+
+Pedido do cliente: {pedido_cliente}
+
+Analise tecnicamente as opções disponíveis e recomende o veículo mais adequado.
+Baseie-se em consumo, conforto, categoria e uso indicado. Seja direto, objetivo e técnico.
+"""
+
+    try:
+        response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "Sou um vendedor técnico e objetivo. Minhas respostas são curtas, técnicas e vão direto ao ponto."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.5,
+        max_tokens=250
+    )
+
+        recomendacao = response.choices[0].message.content.strip()
+
+        return {
+            "recomendacao": recomendacao,
+            "pedido": pedido_cliente
+        }, 200
+
+    except Exception as e:
+        return {"error": f"Erro ao comunicar com a API da OpenAI: {str(e)}"}, 500
         

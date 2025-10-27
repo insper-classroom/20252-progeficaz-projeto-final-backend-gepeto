@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from utils import connect_db, get_all, get_by_id, insert_veiculo, remove_veiculo, update_veiculo, authenticate
+from utils import connect_db, get_all, get_by_id, insert_veiculo, remove_veiculo, update_veiculo, authenticate,recomendacao_veiculo
 
 from openai_service import get_recomendacao_veiculo
 
@@ -50,33 +50,18 @@ def login():
     return jsonify(response), status
 
 
+
 @app.route("/api/recomendacao", methods=["POST"])
 def gerar_recomendacao():
-    """
-    Recebe um pedido do cliente e retorna uma recomendação de veículo
-    usando a API da OpenAI
-    """
     try:
         data = request.get_json()
-        
         if not data:
             return jsonify({"error": "Nenhum dado enviado"}), 400
-        
-        pedido = data.get("pedido")
-        
-        if not pedido:
-            return jsonify({"error": "Campo 'pedido' é obrigatório"}), 400
-        
-        recomendacao, erro = get_recomendacao_veiculo(pedido)
-        
-        if erro:
-            return jsonify({"error": erro}), 500
-        
-        return jsonify({
-            "recomendacao": recomendacao,
-            "pedido": pedido
-        }), 200
-        
+
+        recomendacao, status = recomendacao_veiculo(data)
+
+        return jsonify(recomendacao), status
+
     except Exception as e:
         return jsonify({"error": f"Erro ao processar solicitação: {str(e)}"}), 500
 
