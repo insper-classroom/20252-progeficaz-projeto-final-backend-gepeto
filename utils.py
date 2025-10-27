@@ -134,7 +134,7 @@ def recomendacao_veiculo(data):
     if not client:
         return {"error": "API da OpenAI não configurada. Verifique a variável OPENAI_API_KEY."}, 500
 
-    pedido_cliente = data.get("pedido_cliente")
+    pedido_cliente = data.get("texto")
     if not pedido_cliente:
         return {"error": "O campo 'pedido_cliente' é obrigatório."}, 400
 

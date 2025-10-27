@@ -1,9 +1,13 @@
 from flask import Flask, request, jsonify
 from utils import connect_db, get_all, get_by_id, insert_veiculo, remove_veiculo, update_veiculo, authenticate,recomendacao_veiculo
-
-
+from flask_cors import CORS
+from dotenv import load_dotenv
+import os
 app = Flask(__name__)
+load_dotenv(".cred")
 
+
+CORS(app, origins=[os.getenv('FRONT_URL')])
 
 
 @app.route("/api/veiculos", methods=["GET"])
