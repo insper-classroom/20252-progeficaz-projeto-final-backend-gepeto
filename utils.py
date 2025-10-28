@@ -127,6 +127,24 @@ def authenticate(data):
         "role": payload["role"],
         "expira_em": payload["exp"].isoformat() + "Z"
     }, 200
+    
+from jwt import ExpiredSignatureError, InvalidTokenError
+
+
+
+# def verify_token(data):
+    
+#     if not data.startswith("Bearer "):
+#         return {"error": "Token ausente"}, 401
+
+#     token = data.split(" ")[1]
+#     try:
+#         decoded = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALG])
+#         return {"valid": True, "role": decoded.get("role")}, 200
+#     except ExpiredSignatureError:
+#         return {"error": "Token expirado"}, 401
+#     except InvalidTokenError:
+#         return {"error": "Token inválido"}, 401
 
 
 

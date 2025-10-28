@@ -1,19 +1,23 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify,Response
 from utils import connect_db, get_all, get_by_id, insert_veiculo, remove_veiculo, update_veiculo, authenticate,recomendacao_veiculo
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
+from bson import json_util
+import json 
 app = Flask(__name__)
 load_dotenv(".cred")
 
 
 CORS(app, origins=[os.getenv('FRONT_URL')])
 
-
 @app.route("/api/veiculos", methods=["GET"])
 def get_veiculos():
     veiculos = get_all()
-    return jsonify(veiculos), 200
+    return Response(
+        json_util.dumps(veiculos),
+        mimetype='application/json'
+    )
 
 
 @app.route("/api/veiculos/<id>", methods=["GET"])
@@ -52,6 +56,11 @@ def login():
     response, status = authenticate(data)
     return jsonify(response), status
 
+# @app.route("/verify", methods=["GET"])
+# def jwt_verify():
+#     auth_header = request.headers.get("Authorization", "")
+#     msg, code = verify_token(auth_header)
+#     return jsonify(msg), code
 
 
 @app.route("/api/recomendacao", methods=["POST"])
