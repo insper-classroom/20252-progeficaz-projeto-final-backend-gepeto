@@ -9,7 +9,7 @@ app = Flask(__name__)
 load_dotenv(".cred")
 
 
-CORS(app, origins=[os.getenv('FRONT_URL')])
+CORS(app, origins=[os.getenv('FRONT_URL'),"http://127.0.0.1:5173"])
 
 @app.route("/api/veiculos", methods=["GET"])
 def get_veiculos():
