@@ -24,7 +24,10 @@ def get_veiculos():
 def get_veiculos_by_id(id):
     veiculo = get_by_id(id)
     if veiculo:
-        return jsonify(veiculo), 200
+        return Response(
+            json_util.dumps(veiculo),
+            mimetype='application/json'
+        )
     else:
         return jsonify({"error": "Veículo não encontrado"}), 404
     

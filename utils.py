@@ -40,12 +40,16 @@ def get_all():
 def get_by_id(veiculo_id):
     db = connect_db()
     if db is not None:
-        object_id = ObjectId(veiculo_id)
+        try:
+            object_id = ObjectId(veiculo_id)
+        except:
+            return None
         veiculo = db.veiculos.find_one({'_id': object_id})
         if veiculo:
             veiculo['_id'] = str(veiculo['_id'])
             return veiculo
     return None
+
 
 
 def insert_veiculo(data):
@@ -85,6 +89,9 @@ def update_veiculo(id, data):
         object_id = ObjectId(id)
     except:
         return {"error": "ID inválido"}, 400
+    if "_id" in data:
+        data.pop("_id")
+
     result = db.veiculos.update_one({'_id': object_id}, {'$set': data})
 
     if result.matched_count == 0:
