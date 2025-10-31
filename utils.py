@@ -139,19 +139,17 @@ from jwt import ExpiredSignatureError, InvalidTokenError
 
 
 
-# def verify_token(data):
-    
-#     if not data.startswith("Bearer "):
-#         return {"error": "Token ausente"}, 401
-
-#     token = data.split(" ")[1]
-#     try:
-#         decoded = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALG])
-#         return {"valid": True, "role": decoded.get("role")}, 200
-#     except ExpiredSignatureError:
-#         return {"error": "Token expirado"}, 401
-#     except InvalidTokenError:
-#         return {"error": "Token inválido"}, 401
+def verify_token(auth_header):
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return {"error": "Token ausente"}, 401
+    token = auth_header.split(" ", 1)[1].strip()
+    try:
+        decoded = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALG])
+        return {"valid": True, "payload": decoded}, 200
+    except ExpiredSignatureError:
+        return {"error": "Token expirado"}, 401
+    except InvalidTokenError:
+        return {"error": "Token inválido"}, 401
 
 
 

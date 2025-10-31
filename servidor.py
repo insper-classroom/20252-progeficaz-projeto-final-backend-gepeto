@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify,Response
-from utils import connect_db, get_all, get_by_id, insert_veiculo, remove_veiculo, update_veiculo, authenticate,recomendacao_veiculo
+from utils import connect_db, get_all, get_by_id, insert_veiculo, remove_veiculo, update_veiculo, authenticate,recomendacao_veiculo, verify_token
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
@@ -9,7 +9,29 @@ app = Flask(__name__)
 load_dotenv(".cred")
 
 
-CORS(app, origins=[os.getenv('FRONT_URL'),"http://127.0.0.1:5173"])
+CORS(
+    app,
+    origins=[os.getenv('FRONT_URL'),"http://127.0.0.1:5173"],
+    allow_headers=["Content-Type", "Authorization"],
+    supports_credentials=True
+)
+
+
+@app.before_request
+def require_auth_for_api():
+    # Libera rotas públicas
+    if request.path == "/login":
+        return None
+    # Libera preflight CORS
+    if request.method == "OPTIONS":
+        return None
+    # Protege todas as rotas sob /api
+    if request.path.startswith("/api/"):
+        auth_header = request.headers.get("Authorization", "")
+        msg, code = verify_token(auth_header)
+        if code != 200:
+            return jsonify(msg), code
+    return None
 
 @app.route("/api/veiculos", methods=["GET"])
 def get_veiculos():
