@@ -9,9 +9,14 @@ app = Flask(__name__)
 load_dotenv(".cred")
 
 
+origins_list = ["http://127.0.0.1:5173"]
+front_url = os.getenv('FRONT_URL')
+if front_url:
+    origins_list.append(front_url)
+
 CORS(
     app,
-    origins=[os.getenv('FRONT_URL'),"http://127.0.0.1:5173"],
+    origins=origins_list,
     allow_headers=["Content-Type", "Authorization"],
     supports_credentials=True
 )
