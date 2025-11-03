@@ -8,8 +8,8 @@ import json
 app = Flask(__name__)
 load_dotenv(".cred")
 
+origins_list = [os.getenv('CORS_ORIGINS')]
 
-origins_list = ["http://127.0.0.1:5173"]
 front_url = os.getenv('FRONT_URL')
 if front_url:
     origins_list.append(front_url)
@@ -24,13 +24,10 @@ CORS(
 
 @app.before_request
 def require_auth_for_api():
-    # Libera rotas públicas
-    if request.path == "/login":
+    if request.path in ["/login", "/api/recomendacao"]:
         return None
-    # Libera preflight CORS
     if request.method == "OPTIONS":
         return None
-    # Protege todas as rotas sob /api
     if request.path.startswith("/api/"):
         auth_header = request.headers.get("Authorization", "")
         msg, code = verify_token(auth_header)

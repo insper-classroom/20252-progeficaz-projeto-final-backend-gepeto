@@ -20,7 +20,6 @@ def connect_db():
     try:
         client = MongoClient(mongo_uri)
         db = client[db_name]
-        print("Conexão com MongoDB bem-sucedida.")
         return db
     except Exception as e:
         print(f"Erro ao conectar ao MongoDB: {e}")
