@@ -8,6 +8,19 @@
 
 ---
 
+## 🌐 Deploy da API
+
+A API está atualmente hospedada e acessível publicamente no link abaixo:
+
+👉 **[http://56.124.79.244:5000/api/veiculos](http://56.124.79.244:5000/api/veiculos)**
+
+> Caso o link não carregue, verifique se o serviço Gunicorn está ativo na instância EC2:
+> ```bash
+> sudo systemctl status gepeto-backend
+> ```
+
+---
+
 ## 📋 Sobre o Projeto
 
 O **Gepeto Backend** é uma API RESTful desenvolvida em **Flask**, que fornece:
@@ -63,5 +76,3 @@ O **Gepeto Backend** é uma API RESTful desenvolvida em **Flask**, que fornece:
   "tracao": "dianteira",
   "score": 0.92
 }
-
-
