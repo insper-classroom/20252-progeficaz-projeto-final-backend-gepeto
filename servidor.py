@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify,Response
-from utils import connect_db, get_all, get_by_id, insert_veiculo, remove_veiculo, update_veiculo, authenticate,recomendacao_veiculo, verify_token
+from utils import connect_db, get_all, get_by_id, insert_veiculo, remove_veiculo, update_veiculo, authenticate,recomendacao_veiculo, verify_token, obter_historico_conversa, criar_ou_buscar_conversa
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
@@ -103,6 +103,36 @@ def gerar_recomendacao():
 
     except Exception as e:
         return jsonify({"error": f"Erro ao processar solicitação: {str(e)}"}), 500
+
+
+@app.route("/api/conversa/<session_id>", methods=["GET"])
+def obter_conversa(session_id):
+    """Endpoint para recuperar o histórico de uma conversa"""
+    try:
+        historico = obter_historico_conversa(session_id)
+        return jsonify({
+            "session_id": session_id,
+            "mensagens": historico
+        }), 200
+    except Exception as e:
+        return jsonify({"error": f"Erro ao recuperar conversa: {str(e)}"}), 500
+
+
+@app.route("/api/conversa/nova", methods=["POST"])
+def criar_nova_conversa():
+    """Endpoint para criar uma nova conversa e obter session_id"""
+    try:
+        conversa, session_id = criar_ou_buscar_conversa()
+        if conversa:
+            return jsonify({
+                "session_id": session_id,
+                "data_criacao": conversa.get("data_criacao").isoformat() + "Z",
+                "data_expiracao": conversa.get("data_expiracao").isoformat() + "Z"
+            }), 200
+        else:
+            return jsonify({"error": "Erro ao criar conversa"}), 500
+    except Exception as e:
+        return jsonify({"error": f"Erro ao criar conversa: {str(e)}"}), 500
 
 
 if __name__ == '__main__':
